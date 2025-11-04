@@ -2,11 +2,10 @@ Console Commands
 
 pressing tab auto completes with either highlighted AI move or AI move that does most dmg to current in pokemon
 also can shorten move to first letter of each word "Dark Pulse" => "dp"
-!baits move1 !after move2 - same as above but after taking max damage from move2
 
 
-!doesN - all rolls do at least N% damage
-!doesNWithBoostN -  all rolls do at least N damage with N% dmg boost 
+!baits move1 !after move2 - same as above but after taking max damage from move2 and max damage crit
+
 
 !1v1sc - wins 1v1 assuming ai crits
 !1v1s - wins 1v1 assuming no crits
