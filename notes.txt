@@ -1,16 +1,7 @@
 Console Commands
 
-pressing tab auto completes with either highlighted AI move or AI move that does most dmg to current in pokemon
-also can shorten move to first letter of each word "Dark Pulse" => "dp"
-
 
 !baits move1 !after move2 - same as above but after taking max damage from move2 and max damage crit
-
-
-!1v1sc - wins 1v1 assuming ai crits
-!1v1s - wins 1v1 assuming no crits
-!1v1safterc move - wins1v1 after switching in on move crit
-!1v1safter move -  wins1v1 after switching in on move
 
 !immune - mons that have immunities to one or more ai moves
 !immune move - mons that are immune to move
@@ -19,14 +10,9 @@ also can shorten move to first letter of each word "Dark Pulse" => "dp"
 
 
 
-Very Advanced Commands
-
-
-
+Advanced Commands
 
 !ppstallpairs - pairs of mons that are immune to a move and bait another move that the other is immune to, include regenerators that take less than 33%
-
-
 
 !stopBadOdds - lists moves from pokemon's learnset that let player mon win the 1v1 if AI mon switches in on them, includes TMs and learnset up to level
 
