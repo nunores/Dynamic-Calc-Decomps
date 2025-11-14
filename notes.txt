@@ -3,16 +3,13 @@ Console Commands
 
 !baits move1 !after move2 - same as above but after taking max damage from move2 and max damage crit
 
-!immune - mons that have immunities to one or more ai moves
-!immune move - mons that are immune to move
-
-!allmoves boost - prints all damage ranges for moves in learnset and obtained tms
+!moves boost - prints all damage ranges for moves in learnset and obtained tms
 
 
 
 Advanced Commands
 
-!ppstallpairs - pairs of mons that are immune to a move and bait another move that the other is immune to, include regenerators that take less than 33%
+!ppstall - pairs of mons that are immune to a move and bait another move that the other is immune to, include regenerators that take less than 33%
 
 !stopBadOdds - lists moves from pokemon's learnset that let player mon win the 1v1 if AI mon switches in on them, includes TMs and learnset up to level
 
