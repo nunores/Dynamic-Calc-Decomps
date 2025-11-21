@@ -38,3 +38,60 @@ bait priority list
 
 fastest killing with prio non resist berry 
 fastest killing with prio non chargin
+
+
+
+Commands that are available with encounter data loaded
+
+
+// Get Difficulty Value for a trainer mon
+
+Generate list of all encounters, group by location/enc pool, 
+    Fields to add:
+        enc_rate - chance of finding within pool
+        prob - probability of finding a mon that wins the 1v1 in this pool
+
+
+get 1v1 outcome for every encounter
+    store outcomes in hash
+
+calc probability of finding a mon that wins the 1v1 within each loc assuming you choose the highest prob pool
+    probs = []
+    for each loc
+        pool_prob = 0
+        for each pool
+            if wins1v1
+                pool_prob += enc_rate
+
+        pool_prob = pool_prob / 100
+        probs << pool_prob
+
+    prob = probs.max
+
+
+
+calc how many 1v1 winners on average a player will find  
+    prob_sum = 0
+    for each loc
+        prob_sum += loc.prob
+
+
+can do the same but adjust for crits or wins1v1 after taking weakest move
+
+
+Difficulty = avg_answers_found / total_encounters_available
+
+
+
+
+REQUIRED CONFIGS
+
+level available for every evolution item
+level obtained for every TM
+allow egg moves
+
+
+
+
+
+
