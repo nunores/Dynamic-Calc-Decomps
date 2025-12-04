@@ -48,8 +48,8 @@ Commands that are available with encounter data loaded
 
 Generate list of all encounters, group by location/enc pool, 
     Fields to add:
-        enc_rate - chance of finding within pool
-        prob - probability of finding a mon that wins the 1v1 in this pool
+        enc_rate -> chance of finding within pool
+        prob -> probability of finding a mon that wins the 1v1 in this pool
 
 
 get 1v1 outcome for every encounter
@@ -76,10 +76,18 @@ calc how many 1v1 winners on average a player will find
         prob_sum += loc.prob
 
 
+calc how many mons can dmg before dying
+
+
+
 can do the same but adjust for crits or wins1v1 after taking weakest move
+option to define winnign 1v1 as needing to eat the weakest dmging move first to simulate switching in
+
 
 
 Difficulty = avg_answers_found / total_encounters_available
+
+
 
 
 
