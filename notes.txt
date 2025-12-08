@@ -91,13 +91,19 @@ Difficulty = avg_answers_found / total_encounters_available
 
 
 
-
 REQUIRED CONFIGS
 
 level available for every evolution item
 level obtained for every TM
 allow egg moves
 
+
+
+analytics features
+
+
+which mons are clicked while a trainer is displayed
+sync on refresh and save load?
 
 
 
