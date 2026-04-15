@@ -182,14 +182,17 @@ Derived fields:
 - `trainer_class = trdata.raw.class`
 - `difficulty = trpok.raw.ivs_{sub_index}`
 - `level = trpok.raw.level_{sub_index}`
-- `ability = (trpok.readable.ability_{sub_index} / 16) - 1`
+- `raw_ability = (trpok.readable.ability_{sub_index} / 16) - 1`
+- `ability = raw_ability >= 0 ? raw_ability : last_non_zero_ability_or_0`
+  - `last_non_zero_ability_or_0` is tracked within the same trainer party
+  - if all previous Pokemon have `raw_ability < 0`, use `0` (ability 1)
 - `species = species_id % 1024` (if > 1024)
 - `gender = (gender_table[trainer_class] == "01") ? "female" : "male"`
 
 Compact JS-like pseudocode:
 ```js
 function getNatureG4({
-  fileName, subIndex, trpokReadable, trpokRaw, trdataRaw, genderTable, baseRom
+  fileName, subIndex, trpokReadable, trpokRaw, trdataRaw, genderTable, baseRom, lastNonZeroAbility = 0
 }) {
   let species = trpokRaw[`species_id_${subIndex}`] | 0;
   if (species > 1024) species = species % 1024;
@@ -199,7 +202,9 @@ function getNatureG4({
   const difficulty = trpokRaw[`ivs_${subIndex}`] | 0;
   const level = trpokRaw[`level_${subIndex}`] | 0;
   const abilitySlot = trpokReadable[`ability_${subIndex}`] | 0;
-  const ability = Math.floor(abilitySlot / 16) - 1;
+  const rawAbility = Math.floor(abilitySlot / 16) - 1;
+  const ability = rawAbility >= 0 ? rawAbility : lastNonZeroAbility;
+  const nextLastNonZeroAbility = rawAbility >= 0 ? rawAbility : lastNonZeroAbility;
 
   const gender = (genderTable[trainerClass] === "01") ? "female" : "male";
 
@@ -225,11 +230,15 @@ function getNatureG4({
     ? ((parseInt(pidLastTwo, 10) + ab) % 25)
     : baseNature;
 
-  return NATURES[natureId]; // NATURES = array of 25 names
+  return {
+    nature: NATURES[natureId], // NATURES = array of 25 names
+    nextLastNonZeroAbility,
+  };
 }
 ```
 
 Notes:
 - The gender table is indexed by `trainer_class`.
+- Iterate the trainer party in order and pass `nextLastNonZeroAbility` into the next Pokemon; start at `0` (ability 1) for the first Pokemon in a trainer.
 - The PRNG uses a hex seed and iterates `trainer_class` times.
 - For HGSS only, add `ab` before modulo 25.
