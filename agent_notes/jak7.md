@@ -98,7 +98,7 @@ That bug caused the exporter to pick the correct `JAK7` path but still generate 
 
 The fix is in:
 
-- [/Users/andylee/Repos/vsrecorder/ddex/rom/dspre_export.js](/Users/andylee/Repos/vsrecorder/ddex/rom/dspre_export.js:3826)
+
 
 ## Verified Trainer 403 Output
 
