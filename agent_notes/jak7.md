@@ -4,8 +4,7 @@ This note documents how trainer PID and nature generation differs between vanill
 
 Relevant exporter code:
 
-- [/Users/andylee/Repos/vsrecorder/ddex/rom/dspre_export.js](/Users/andylee/Repos/vsrecorder/ddex/rom/dspre_export.js:3798)
-- [/Users/andylee/Repos/vsrecorder/ddex/rom/dspre_export.js](/Users/andylee/Repos/vsrecorder/ddex/rom/dspre_export.js:5250)
+
 
 ## Vanilla Platinum
 
@@ -83,7 +82,7 @@ Two exporter changes were required.
 
 This is handled in:
 
-- [/Users/andylee/Repos/vsrecorder/ddex/rom/dspre_export.js](/Users/andylee/Repos/vsrecorder/ddex/rom/dspre_export.js:5250)
+- 
 
 ### 2. Fix the RNG multiply
 
