@@ -18,6 +18,7 @@ Optional:
 - `ability_replacements`
 - `item_replacements`
 - `includes`
+- `type_chart`
 - `title`
 - `order`
 
@@ -33,6 +34,10 @@ Compact JSON schema example:
   "move_replacements": { "<OldName>": "<NewName>" },
   "ability_replacements": { "<OldName>": "<NewName>" },
   "item_replacements": { "<OldName>": "<NewName>" },
+  "type_chart": {
+    "Normal": { "Normal": 1, "Ghost": 0 },
+    "Ghost": { "Normal": 0, "Ghost": 2 }
+  },
   "includes": {
     "poks": ["<PokemonName>"],
     "moves": ["<MoveName>"],
@@ -47,6 +52,7 @@ Compact JSON schema example:
 Notes:
 - `order` can be omitted if a separate trainer order file exists.
 - Replacement maps are applied by name to bridge ROM naming quirks.
+- `type_chart` is an attacking-type to defending-type effectiveness table. When present, it overrides the URL `types` parameter and the title's default type chart.
 
 ## 2) `formatted_sets` Schema
 
