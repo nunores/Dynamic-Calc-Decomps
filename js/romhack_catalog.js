@@ -1,4 +1,53 @@
 (function () {
+    const localHostNames = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
+    const localizableCalcPaths = new Set(["Dynamic-Calc-Decomps", "Dynamic-Calc", "Dynamic-Calc-Unbound"]);
+
+    function isLocalHost(hostname) {
+        return localHostNames.has(hostname);
+    }
+
+    function getLocalCalcBase(targetPath) {
+        const location = window.location;
+        const currentPathParts = location.pathname.split("/");
+        const targetIndex = currentPathParts.indexOf(targetPath);
+
+        if (targetIndex !== -1) {
+            return `${location.origin}${currentPathParts.slice(0, targetIndex + 1).join("/")}/`;
+        }
+
+        if (targetPath === "Dynamic-Calc-Decomps") {
+            return new URL("./", location.href).toString();
+        }
+
+        return `${location.origin}/${targetPath}/`;
+    }
+
+    function localizeCalcSource(source) {
+        if (!source || !isLocalHost(window.location.hostname)) {
+            return source;
+        }
+
+        let url;
+        try {
+            url = new URL(source, window.location.href);
+        } catch (error) {
+            return source;
+        }
+
+        if (url.hostname !== "hzla.github.io") {
+            return source;
+        }
+
+        const targetPath = url.pathname.split("/").filter(Boolean)[0];
+        if (!localizableCalcPaths.has(targetPath)) {
+            return source;
+        }
+
+        return `${getLocalCalcBase(targetPath)}${url.search}${url.hash}`;
+    }
+
+    window.localizeCalcSource = localizeCalcSource;
+
     const games = {
         "ancestral-x": {
             id: "ancestral-x",
@@ -793,12 +842,13 @@
                 return;
             }
 
+            const localizedSource = localizeCalcSource(variant.source);
             const dataKey = getDataKey(variant.source);
             if (dataKey && !sourceTitles[dataKey]) {
                 sourceTitles[dataKey] = variant.sourceTitle || game.sourceTitle || game.title || variant.label;
             }
 
-            const uniqueKey = `${variant.label}::${variant.source}`;
+            const uniqueKey = `${variant.label}::${localizedSource}`;
             if (seenLinkOptions.has(uniqueKey)) {
                 return;
             }
@@ -808,7 +858,7 @@
                 gameId: game.id,
                 gameTitle: game.title,
                 label: variant.label,
-                source: variant.source
+                source: localizedSource
             });
         });
     });

@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "node --check js/shared_controls.js && node calc/test/relative-level.test.js",
+    "test": "node --check js/shared_controls.js && node --check js/romhack_catalog.js && node --check js/romhack_modal.js && node --check js/showdown_hooks.js && node calc/test/relative-level.test.js && node calc/test/localize-calc-source.test.js",
     "test:relative-level": "node calc/test/relative-level.test.js",
     "test:cascade-gen56": "npx jest calc/test/cascade-gen56.test.js"
   },

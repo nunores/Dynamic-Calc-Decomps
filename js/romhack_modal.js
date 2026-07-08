@@ -36,9 +36,17 @@
     function renderVariantLink(variant) {
         const link = document.createElement("a");
         link.className = "romhack-browser-link romhack-browser-action";
-        link.href = variant.source;
+        link.href = getVariantSource(variant);
         link.textContent = variant.label;
         return link;
+    }
+
+    function getVariantSource(variant) {
+        if (typeof window.localizeCalcSource === "function") {
+            return window.localizeCalcSource(variant.source);
+        }
+
+        return variant.source;
     }
 
     function renderGameCard(game, section) {
@@ -51,7 +59,7 @@
         card.className = `romhack-browser-game${isSingleVariant ? " romhack-browser-game-single romhack-browser-action" : ""}${hasBoxArt ? " romhack-browser-game-featured" : ""}`;
 
         if (isSingleVariant) {
-            card.href = variants[0].source;
+            card.href = getVariantSource(variants[0]);
         }
 
         if (hasBoxArt) {

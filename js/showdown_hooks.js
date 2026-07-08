@@ -280,7 +280,11 @@ $(document).ready(function() {
 
 
     $(document).on('change', '.calc-select', function() {
-        location.href = $('.calc-select option:selected').attr('data-source')
+        var source = $('.calc-select option:selected').attr('data-source')
+        if (typeof window.localizeCalcSource === "function") {
+            source = window.localizeCalcSource(source)
+        }
+        location.href = source
     })
 
    $(document).on('click', '.trainer-name', function() {
