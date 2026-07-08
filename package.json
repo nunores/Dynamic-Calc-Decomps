@@ -1,5 +1,7 @@
 {
   "scripts": {
+    "test": "node --check js/shared_controls.js && node calc/test/relative-level.test.js",
+    "test:relative-level": "node calc/test/relative-level.test.js",
     "test:cascade-gen56": "npx jest calc/test/cascade-gen56.test.js"
   },
   "devDependencies": {

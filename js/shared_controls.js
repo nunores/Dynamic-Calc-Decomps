@@ -2815,7 +2815,7 @@ $(".set-selector").change(function () {
 			var set = regSets ? correctHiddenPower(setdex[pokemonName][setName]) : randset;
 			
 
-			if (set.level < 1) {
+			if (shouldResolveRelativeSetLevel(set)) {
 				pokeObj.find(".level").val(resolveRelativeSetLevel(set, $('#levelR1').val()));
 			} else {
 				pokeObj.find(".level").val(set.level);
@@ -3236,8 +3236,51 @@ function refreshAbilitySlotDisplays() {
 	}
 }
 
+function getHighestImportedPokemonLevel() {
+	var sources = [];
+
+	if (typeof customSets === "object" && customSets) {
+		sources.push(customSets);
+	}
+
+	if (typeof localStorage !== "undefined" && localStorage.customsets) {
+		try {
+			sources.push(JSON.parse(localStorage.customsets));
+		} catch (e) {}
+	}
+
+	var highestLevel = null;
+	for (var sourceIndex = 0; sourceIndex < sources.length; sourceIndex++) {
+		var setsBySpecies = sources[sourceIndex];
+		for (var speciesName in setsBySpecies) {
+			if (
+				!setsBySpecies[speciesName] ||
+				!setsBySpecies[speciesName]["My Box"]
+			) {
+				continue;
+			}
+
+			var level = parseInt(setsBySpecies[speciesName]["My Box"].level, 10);
+			if (!Number.isFinite(level) || level < 1) {
+				continue;
+			}
+
+			if (highestLevel === null || level > highestLevel) {
+				highestLevel = level;
+			}
+		}
+	}
+
+	return highestLevel;
+}
+
 function getActiveLevelCap(fallbackLevel) {
 	var candidates = [];
+	var importedHighestLevel = getHighestImportedPokemonLevel();
+
+	if (Number.isFinite(importedHighestLevel)) {
+		candidates.push(importedHighestLevel);
+	}
 
 	if (typeof lvlCap !== "undefined") {
 		candidates.push(lvlCap);
@@ -3280,6 +3323,10 @@ function resolveRelativeSetLevel(set, fallbackLevel) {
 	}
 
 	return baseLevel + levelOffset;
+}
+
+function shouldResolveRelativeSetLevel(set) {
+	return !!set && (parseInt(set.level, 10) < 1 || typeof set.sublevel !== "undefined");
 }
 
 
@@ -3345,9 +3392,8 @@ function createPokemon(pokeInfo, customMoves=false, ignoreStatMods=false) {
 
 		let tmpLvl = set.level
 
-		if ((parseInt(set.level) < 1 || typeof set.sublevel != "undefined")) {
+		if (shouldResolveRelativeSetLevel(set)) {
 			tmpLvl = resolveRelativeSetLevel(set, $('#levelR1').val())
-			set.level = tmpLvl	
 			// console.log(`adjusting ${name} to level ${tmpLvl} for pokemon creation`)
 		}
 
