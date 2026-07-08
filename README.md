@@ -3,6 +3,24 @@
 # Dynamic Calc
 A showdown calculator fork with dynamic data source loading and expanded features for nuzlockes
 
+## Local Production Mode
+
+Run the static app locally with the same path shape used by GitHub Pages:
+
+```sh
+npm run prod
+```
+
+This serves the parent folder on `127.0.0.1`, opens the app at `/Dynamic-Calc-Decomps/`, and keeps sibling calculator routes local when those folders exist next to this repo.
+
+Useful variants:
+
+```sh
+npm start
+npm run prod:no-open
+npm run prod -- --port 9090
+```
+
 ## Features for Nuzlockers
   
 ### Imported Set Preview
