@@ -12,6 +12,7 @@ npm run prod
 ```
 
 This serves the parent folder on `127.0.0.1`, opens the app at `/Dynamic-Calc-Decomps/`, and keeps sibling calculator routes local when those folders exist next to this repo.
+The local server stops automatically a few seconds after the opened browser tab is closed.
 
 Useful variants:
 
@@ -19,6 +20,7 @@ Useful variants:
 npm start
 npm run prod:no-open
 npm run prod -- --port 9090
+npm run prod -- --no-shutdown-on-tab-close
 ```
 
 ## Features for Nuzlockers
