@@ -1734,7 +1734,10 @@ function updateLeftPokeSprite(pokemonName) {
 	if (!pokemonName) {
 		return;
 	}
-	$('#p1 .poke-sprite').attr('src', `./img/${playerSprites}/${getLeftPokeSpriteName(pokemonName)}.${suffix}`);
+	var spriteName = getLeftPokeSpriteName(pokemonName);
+	var spriteImage = $('#p1 .poke-sprite').get(0);
+	boxSpriteFallback.bind(spriteImage, spriteName, playerSprites, suffix);
+	$('#p1 .poke-sprite').attr('src', `./img/${playerSprites}/${spriteName}.${suffix}`);
 	$('#p1 .poke-sprite').addClass('no-flip');
 }
 
@@ -2109,7 +2112,7 @@ function renderTrainerPreviewPok(next_pok) {
 	}
 
 	var pok = `<div class="trainer-pok-container ${isFainted}">
-	<img class="trainer-pok right-side hl-disabled ${isFainted} ${isLead}" src="./img/${sprite_style}/${pok_name.replace(" ", "").replace(/-s$/, "")}.png" data-id="${dataID}">`
+	<img class="trainer-pok right-side hl-disabled ${isFainted} ${isLead}" src="./img/${sprite_style}/${pok_name.replace(" ", "").replace(/-s$/, "")}.png" data-id="${dataID}" ${boxSpriteFallback.attributes(pok_name.replace(" ", "").replace(/-s$/, ""), sprite_style, "png")}>`
 
 	var item = setData["item"]
 
@@ -2739,7 +2742,9 @@ $(".set-selector").change(function () {
 			pokesprite = pokesprite.split("alolan-")[1] +  "-alola"
 		}
 
-		$('#p2 .poke-sprite').attr('src', `./img/${trainerSprites}/${pokesprite.replace("-glitched", "").replace(/-s$/, "")}.${suffix}`)
+		var resolvedPokeSprite = pokesprite.replace("-glitched", "").replace(/-s$/, "")
+		boxSpriteFallback.bind($('#p2 .poke-sprite').get(0), resolvedPokeSprite, trainerSprites, suffix)
+		$('#p2 .poke-sprite').attr('src', `./img/${trainerSprites}/${resolvedPokeSprite}.${suffix}`)
 
 		if ($('#player-poks-filter:visible').length > 0 && typeof queueBoxMatchupRefresh === "function") {
 	       queueBoxMatchupRefresh()
