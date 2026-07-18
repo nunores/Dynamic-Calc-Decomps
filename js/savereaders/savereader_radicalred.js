@@ -537,49 +537,19 @@
       : null;
   }
 
-  function rrResolveLevelCap(fallbackLevel, options) {
-    if (options && typeof options.levelCap !== "undefined") {
-      var optionCap = rrNormalizeLevel(options.levelCap);
-      if (optionCap) {
-        return optionCap;
-      }
-    }
-
-    var getActiveLevelCap = rrGetGlobalValue("getActiveLevelCap");
-    if (typeof getActiveLevelCap === "function") {
-      var activeCap = rrNormalizeLevel(getActiveLevelCap(fallbackLevel));
-      if (activeCap) {
-        return activeCap;
-      }
-    }
-
-    var globalCap = rrNormalizeLevel(rrGetGlobalValue("lvlCap"));
-    if (globalCap) {
-      return globalCap;
-    }
-
-    if (typeof document !== "undefined") {
-      var levelCapInput = document.getElementById("lvl-cap");
-      if (levelCapInput) {
-        var inputCap = rrNormalizeLevel(levelCapInput.value);
-        if (inputCap) {
-          return inputCap;
-        }
-      }
-    }
-
-    if (typeof localStorage !== "undefined") {
-      var storageCap = rrNormalizeLevel(localStorage.lvlCap);
-      if (storageCap) {
-        return storageCap;
-      }
-    }
-
-    return rrNormalizeLevel(fallbackLevel);
-  }
-
   function rrResolveLevel(speciesName, exp, fallbackLevel, options) {
-    return rrResolveLevelCap(fallbackLevel, options) || RR_MAX_LEVEL;
+    var growthRate = rrResolveGrowthRate(speciesName, options);
+    var expTables = rrGetExpTables(options);
+    var getLevelFn = rrGetLevelFunction(options);
+
+    if (Number.isFinite(growthRate) && expTables && expTables[growthRate]) {
+      var resolvedLevel = rrResolveLevelFromExpTable(expTables[growthRate], exp, getLevelFn);
+      if (resolvedLevel) {
+        return resolvedLevel;
+      }
+    }
+
+    return rrNormalizeLevel(fallbackLevel) || RR_MAX_LEVEL;
   }
 
   function rrDecodePackedMoveIds(packedBytes) {
@@ -1064,7 +1034,6 @@
       readRandomizerSaveInfo: rrReadRandomizerSaveInfo,
       resolveActiveLayout: rrResolveActiveLayout,
       resolveLevelFromExpTable: rrResolveLevelFromExpTable,
-      resolveLevelCap: rrResolveLevelCap,
       resolveAbilityNameById: rrResolveAbilityNameById,
       resolveBaseAbilityId: rrResolveBaseAbilityId,
       resolveGenderedSpeciesName: rrResolveGenderedSpeciesName,

@@ -131,7 +131,7 @@ describe("Radical Red save reader helpers", function () {
     expect(parser.__test.monToShowdown(parsedBoxedMon).split("\n")[0]).toBe("Rabsca @ Wise Glasses");
   });
 
-  test("uses the active level cap instead of deriving Radical Red levels from EXP", function () {
+  test("derives Radical Red levels from EXP instead of the active level cap", function () {
     var boltundId = rrConstants.mons.indexOf("Boltund");
     var rabscaId = rrConstants.mons.indexOf("Rabsca");
     expect(boltundId).toBeGreaterThan(0);
@@ -150,7 +150,7 @@ describe("Radical Red save reader helpers", function () {
       getLevelFn: function () { return 2; }
     });
     expect(parsedPartyMon.exp).toBe(1);
-    expect(parsedPartyMon.level).toBe(44);
+    expect(parsedPartyMon.level).toBe(2);
 
     var boxedMon = new Uint8Array(58);
     writeU32LE(boxedMon, 0, 2);
@@ -164,22 +164,7 @@ describe("Radical Red save reader helpers", function () {
       getLevelFn: function () { return 2; }
     });
     expect(parsedBoxedMon.exp).toBe(1);
-    expect(parsedBoxedMon.level).toBe(44);
-  });
-
-  test("reads the current app level cap when no explicit Radical Red level cap is supplied", function () {
-    var previousGetActiveLevelCap = global.getActiveLevelCap;
-    global.getActiveLevelCap = function () { return "36"; };
-
-    try {
-      expect(parser.__test.resolveLevelCap(27, {})).toBe(36);
-    } finally {
-      if (typeof previousGetActiveLevelCap === "undefined") {
-        delete global.getActiveLevelCap;
-      } else {
-        global.getActiveLevelCap = previousGetActiveLevelCap;
-      }
-    }
+    expect(parsedBoxedMon.level).toBe(2);
   });
 
   test("treats RR saves with randomized abilities enabled as randomized regardless of the UI toggle", function () {
@@ -250,7 +235,7 @@ describe("Radical Red local save validation", function () {
   var savePath = process.env.RADICAL_RED_SAVE_PATH;
   var maybeTest = savePath ? test : test.skip;
 
-  maybeTest("parses a local Radical Red save with level-cap levels and randomized abilities", function () {
+  maybeTest("parses a local Radical Red save with experience-derived levels and randomized abilities", function () {
     ensureLevelDependenciesLoaded();
 
     var save = fs.readFileSync(savePath);
@@ -267,7 +252,6 @@ describe("Radical Red local save validation", function () {
     };
     var randomized = parser.parseRadicalRedSaveFile(save, {
       randomizedAbilitiesEnabled: false,
-      levelCap: 85,
       learnsets: sampledLearnsets,
       expTables: global.expTables,
       getLevelFn: global.get_level,
