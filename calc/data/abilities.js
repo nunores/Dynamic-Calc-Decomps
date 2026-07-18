@@ -395,6 +395,7 @@ var SV = SS.concat([
 var RR = SV.concat([
     'Bad Company',
     'Bellow',
+    'Blademaster',
     'Blazing Soul',
     'Blubber Defense',
     'Bone Zone',

@@ -4,7 +4,7 @@
     "prod": "node scripts/serve-production.js",
     "prod:no-open": "node scripts/serve-production.js --no-open",
     "test": "node --check js/shared_controls.js && node --check js/romhack_catalog.js && node --check js/romhack_modal.js && node --check js/showdown_hooks.js && node --check js/calc_ui/sprite_fallback.js && node --check js/calc_ui/player_box.js && node --check scripts/serve-production.js && node calc/test/relative-level.test.js && node calc/test/localize-calc-source.test.js && npm run test:jest",
-    "test:jest": "jest calc/test/player-box-sprite-fallback.test.js calc/test/radicalred-savereader.test.js --runInBand",
+    "test:jest": "jest calc/test/player-box-sprite-fallback.test.js calc/test/radicalred-savereader.test.js calc/test/radical-red-changes.test.js --runInBand",
     "test:relative-level": "node calc/test/relative-level.test.js",
     "test:cascade-gen56": "npx jest calc/test/cascade-gen56.test.js"
   },

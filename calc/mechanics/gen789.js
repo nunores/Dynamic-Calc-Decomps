@@ -158,11 +158,14 @@ function calculateSMSSSV(gen, attacker, defender, move, field) {
     if (attacker.item == "Scope Lens") {
         critStage = 1
     }
+    if (attacker.hasAbility('Blademaster') && move.flags.slicing) {
+        critStage += 1;
+    }
     if (typeof backup_moves != "undefined" && backup_moves[move.name]) {
         if (backup_moves[move.name].crit_stage) {
             critStage += backup_moves[move.name].crit_stage
         }    
-        if (critStage == 3) {
+        if (critStage >= 3) {
             move.isCrit = true;
         // AI sees crit stage 2 as crit damage when calcing for switch ins    
         } else if (isSwitchInCalc && attacker.name != playerName && critStage >= 2) {
@@ -994,7 +997,8 @@ function calculateBPModsSMSSSV(gen, attacker, defender, move, field, desc, baseP
         bpMods.push(4915);
     }
     if ((attacker.hasAbility('Reckless') && (move.recoil || move.hasCrashDamage || move.named('Explosion', 'Misty Explosion', 'Self-Destruct'))) ||
-        (attacker.hasAbility('Liquid Voice') && move.flags.sound)) {
+        (attacker.hasAbility('Liquid Voice') && move.flags.sound) ||
+        (attacker.hasAbility('Blademaster') && move.flags.slicing)) {
         bpMods.push(4915);
         desc.attackerAbility = attacker.ability;
     }
