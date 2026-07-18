@@ -1795,6 +1795,9 @@ function syncMobileBoxShortcutPartyState() {
     if (typeof renderMobileBoxShortcutModal === "function") {
         renderMobileBoxShortcutModal()
     }
+    if (typeof performCalculations === "function") {
+        performCalculations()
+    }
 }
 
 function addMobileBoxShortcutSetToParty(setId) {

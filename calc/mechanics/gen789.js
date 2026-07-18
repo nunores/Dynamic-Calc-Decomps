@@ -24,6 +24,7 @@ function isLocalStorageFlagEnabled(flagName) {
 function calculateSMSSSV(gen, attacker, defender, move, field) {
     var _a;
     var title = typeof TITLE === "string" ? TITLE : "";
+    (0, util_2.applyBeatUpTitleOverride)(move, title);
     if (shouldUseVanillaGen789(title) &&
         typeof vanilla_gen789_1.calculateSMSSSVVanilla === "function") {
         return vanilla_gen789_1.calculateSMSSSVVanilla(gen, attacker, defender, move, field);
@@ -625,6 +626,16 @@ function calculateBasePowerSMSSSV(gen, attacker, defender, move, field, hasAteAb
             var w = (0, util_2.getWeight)(defender, desc, 'defender');
             basePower = w >= 200 ? 120 : w >= 100 ? 100 : w >= 50 ? 80 : w >= 25 ? 60 : w >= 10 ? 40 : 20;
             desc.moveBP = basePower;
+            break;
+        case 'Beat Up':
+            if (Array.isArray(move.beatUpParty)) {
+                var beatUpMember = move.beatUpParty[hit - 1];
+                basePower = beatUpMember ? Math.floor(beatUpMember.baseAttack / 10) + 5 : 0;
+                desc.moveBP = basePower;
+            }
+            else {
+                basePower = move.bp;
+            }
             break;
         
         case 'Barb Barrage':
@@ -1353,7 +1364,7 @@ function calculateBaseDamageSMSSSV(gen, attacker, defender, basePower, attack, d
         }
     }
     if (isCritical) {
-        baseDamage = Math.floor((0, util_2.OF32)(baseDamage * 1.5));
+        baseDamage = Math.floor((0, util_2.OF32)(baseDamage * (0, util_2.getCriticalHitMultiplier)(gen)));
         desc.isCritical = isCritical;
     }
     if (ctx) {

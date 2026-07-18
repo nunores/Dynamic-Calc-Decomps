@@ -9,6 +9,7 @@ var romhacks_1 = require("../romhacks");
 var romhack_helpers_1 = require("../romhacks/helpers");
 function calculateSMSSSVVanilla(gen, attacker, defender, move, field) {
         var title = typeof TITLE === "string" ? TITLE : "";
+        (0, util_2.applyBeatUpTitleOverride)(move, title);
         var profile = (0, romhacks_1.getMechanicsProfile)(title, gen.num);
         var ctx = {
             gen: gen,
@@ -414,7 +415,7 @@ function calculateSMSSSVVanilla(gen, attacker, defender, move, field) {
             desc.defenderItem = defender.item;
         }
         if (isCritical) {
-            baseDamage = Math.floor((0, util_2.OF32)(baseDamage * 1.5));
+            baseDamage = Math.floor((0, util_2.OF32)(baseDamage * (0, util_2.getCriticalHitMultiplier)(gen)));
             desc.isCritical = isCritical;
         }
         var stabMod = 4096;
@@ -630,6 +631,16 @@ function calculateBasePowerSMSSSV(gen, attacker, defender, move, field, hasAteAb
             case 'Infernal Parade':
                 basePower = move.bp * (defender.status || defender.hasAbility('Comatose') ? 2 : 1);
                 desc.moveBP = basePower;
+                break;
+            case 'Beat Up':
+                if (Array.isArray(move.beatUpParty)) {
+                    var beatUpMember = move.beatUpParty[hit - 1];
+                    basePower = beatUpMember ? Math.floor(beatUpMember.baseAttack / 10) + 5 : 0;
+                    desc.moveBP = basePower;
+                }
+                else {
+                    basePower = move.bp;
+                }
                 break;
             case 'Barb Barrage':
                 basePower = move.bp * (defender.hasStatus('psn', 'tox') ? 2 : 1);

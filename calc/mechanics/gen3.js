@@ -52,6 +52,7 @@ function applyMoveCategoryADV(move) {
 }
 function calculateADV(gen, attacker, defender, move, field) {
     var _a;
+    (0, util_1.applyBeatUpTitleOverride)(move, typeof TITLE === "string" ? TITLE : "");
     (0, util_1.checkAirLock)(attacker, field);
     (0, util_1.checkAirLock)(defender, field);
     (0, util_1.checkForecast)(attacker, field.weather);
@@ -71,6 +72,12 @@ function calculateADV(gen, attacker, defender, move, field) {
     }
     if (field.defenderSide.isProtected) {
         desc.isProtected = true;
+        return result;
+    }
+    if (move.named('Beat Up') && Array.isArray(move.beatUpParty)) {
+        if (move.hits > 1)
+            desc.hits = move.hits;
+        result.damage = (0, util_1.calculateLegacyBeatUpDamage)(gen, move, defender);
         return result;
     }
     if (move.name === 'Pain Split') {
@@ -163,7 +170,7 @@ function calculateADV(gen, attacker, defender, move, field) {
         var lv = attacker.level;
 
         var baseDamage = Math.floor(Math.floor((Math.floor((2 * lv) / 5 + 2) * at * bp) / df) / 50);
-        baseDamage = calculateFinalModsADV(baseDamage, attacker, move, field, desc, isCritical);
+        baseDamage = calculateFinalModsADV(baseDamage, attacker, move, field, desc, isCritical, gen);
         baseDamage = Math.floor(baseDamage * type1Effectiveness);
         baseDamage = Math.floor(baseDamage * type2Effectiveness);
         var damage = [];
@@ -364,7 +371,7 @@ function calculateDefenseADV(gen, defender, move, desc, isCritical, field) {
     return df;
 }
 exports.calculateDefenseADV = calculateDefenseADV;
-function calculateFinalModsADV(baseDamage, attacker, move, field, desc, isCritical) {
+function calculateFinalModsADV(baseDamage, attacker, move, field, desc, isCritical, gen) {
     if (isCritical === void 0) { isCritical = false; }
     var isPhysical = move.category === 'Physical';
     if (attacker.hasStatus('brn') && isPhysical && !attacker.hasAbility('Guts')) {
@@ -402,7 +409,7 @@ function calculateFinalModsADV(baseDamage, attacker, move, field, desc, isCritic
     }
     baseDamage = (move.category === 'Physical' ? Math.max(1, baseDamage) : baseDamage) + 2;
     if (isCritical) {
-        baseDamage *= 2;
+        baseDamage = Math.floor(baseDamage * (0, util_1.getCriticalHitMultiplier)(gen));
         desc.isCritical = true;
     }
     if (move.named('Pursuit') && field.defenderSide.isSwitching === 'out') {

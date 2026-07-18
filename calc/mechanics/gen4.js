@@ -34,6 +34,7 @@ var romhack_helpers_1 = require("./romhacks/helpers");
 function calculateDPP(gen, attacker, defender, move, field) {
     var title = typeof TITLE === "string" ? TITLE : "";
     var profile = (0, romhacks_1.getMechanicsProfile)(title, gen.num);
+    (0, util_1.applyBeatUpTitleOverride)(move, title);
     var ctx = {
         gen: gen,
         attacker: attacker,
@@ -79,6 +80,12 @@ function calculateDPP(gen, attacker, defender, move, field) {
     }
     if (field.defenderSide.isProtected && !move.breaksProtect) {
         desc.isProtected = true;
+        return result;
+    }
+    if (move.named('Beat Up') && Array.isArray(move.beatUpParty)) {
+        if (move.hits > 1)
+            desc.hits = move.hits;
+        result.damage = (0, util_1.calculateLegacyBeatUpDamage)(gen, move, defender);
         return result;
     }
     if (attacker.hasAbility('Mold Breaker')) {
@@ -554,12 +561,13 @@ function calculateDPP(gen, attacker, defender, move, field) {
         }
         baseDamage += 2;
         if (isCritical) {
+            var criticalHitMultiplier = (0, util_1.getCriticalHitMultiplier)(gen);
             if (attacker.hasAbility('Sniper')) {
-                baseDamage *= 3;
+                baseDamage = Math.floor(baseDamage * criticalHitMultiplier * 1.5);
                 desc.attackerAbility = attacker.ability;
             }
             else {
-                baseDamage *= 2;
+                baseDamage = Math.floor(baseDamage * criticalHitMultiplier);
             }
             desc.isCritical = isCritical;
         }

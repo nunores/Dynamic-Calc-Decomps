@@ -81,6 +81,9 @@ function toggleTrainerPreviewFaint(setId) {
 
     refresh_next_in()
     syncOpposingKoButton()
+    if (typeof performCalculations === "function") {
+        performCalculations()
+    }
 }
 
 var MID_PANEL_LAYOUT_STORAGE_KEY = "midPanelBottomLayout"
@@ -755,6 +758,9 @@ $(document).ready(function() {
             clearPartyPreviewSlotOverrides()
         }
         localStorage.currentParty = currentParty
+        if (typeof performCalculations === "function") {
+            performCalculations()
+        }
         if (!$('#mobile-box-shortcut-modal').prop('hidden') && typeof renderMobileBoxShortcutModal === "function") {
             renderMobileBoxShortcutModal()
         }
@@ -771,6 +777,9 @@ $(document).ready(function() {
             clearPartyPreviewSlotOverrides()
         }
         refreshTagPartnerPreview()
+        if (typeof performCalculations === "function") {
+            performCalculations()
+        }
         if (!$('#mobile-box-shortcut-modal').prop('hidden') && typeof renderMobileBoxShortcutModal === "function") {
             renderMobileBoxShortcutModal()
         }

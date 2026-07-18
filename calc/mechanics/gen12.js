@@ -30,6 +30,7 @@ var items_1 = require("../items");
 var result_1 = require("../result");
 var util_1 = require("./util");
 function calculateRBYGSC(gen, attacker, defender, move, field) {
+    (0, util_1.applyBeatUpTitleOverride)(move, typeof TITLE === "string" ? TITLE : "");
     (0, util_1.computeFinalStats)(gen, attacker, defender, field, 'atk', 'def', 'spa', 'spd', 'spe');
     var desc = {
         attackerName: attacker.name,
@@ -42,6 +43,12 @@ function calculateRBYGSC(gen, attacker, defender, move, field) {
     }
     if (field.defenderSide.isProtected) {
         desc.isProtected = true;
+        return result;
+    }
+    if (gen.num === 2 && move.named('Beat Up') && Array.isArray(move.beatUpParty)) {
+        if (move.hits > 1)
+            desc.hits = move.hits;
+        result.damage = (0, util_1.calculateLegacyBeatUpDamage)(gen, move, defender);
         return result;
     }
     if (gen.num === 1) {
@@ -86,6 +93,7 @@ function calculateRBYGSC(gen, attacker, defender, move, field) {
     var defenseStat = isPhysical ? 'def' : 'spd';
     var at = attacker.stats[attackStat];
     var df = defender.stats[defenseStat];
+    var criticalHitMultiplier = (0, util_1.getCriticalHitMultiplier)(gen);
     var ignoreMods = move.isCrit &&
         (gen.num === 1 ||
             (gen.num === 2 && attacker.boosts[attackStat] <= defender.boosts[defenseStat]));
@@ -94,7 +102,9 @@ function calculateRBYGSC(gen, attacker, defender, move, field) {
         at = attacker.rawStats[attackStat];
         df = defender.rawStats[defenseStat];
         if (gen.num === 1) {
-            lv *= 2;
+            if (criticalHitMultiplier === 2) {
+                lv *= 2;
+            }
             desc.isCritical = true;
         }
     }
@@ -145,8 +155,8 @@ function calculateRBYGSC(gen, attacker, defender, move, field) {
         desc.defenderItem = defender.item;
     }
     var baseDamage = Math.floor(Math.floor((Math.floor((2 * lv) / 5 + 2) * Math.max(1, at) * move.bp) / Math.max(1, df)) / 50);
-    if (gen.num === 2 && move.isCrit) {
-        baseDamage *= 2;
+    if (move.isCrit && (gen.num === 2 || (gen.num === 1 && criticalHitMultiplier !== 2))) {
+        baseDamage = Math.floor(baseDamage * criticalHitMultiplier);
         desc.isCritical = true;
     }
     if (move.named('Pursuit') && field.defenderSide.isSwitching === 'out') {

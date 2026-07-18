@@ -15,6 +15,7 @@ function calculateBWXY(gen, attacker, defender, move, field) {
     var title = typeof TITLE === "string" ? TITLE : "";
     var sourceId = typeof params !== "undefined" && params && typeof params.get === "function" ? params.get("data") : "";
     var profile = (0, romhacks_1.getMechanicsProfile)(title, gen.num);
+    (0, util_2.applyBeatUpTitleOverride)(move, title);
     var ctx = {
         gen: gen,
         attacker: attacker,
@@ -338,6 +339,12 @@ function calculateBWXY(gen, attacker, defender, move, field) {
                 desc.moveBP = basePower;
                 break;
             case "Beat Up":
+                if (Array.isArray(move.beatUpParty)) {
+                    var beatUpMember = move.beatUpParty[hitCount];
+                    basePower = beatUpMember ? Math.floor(beatUpMember.baseAttack / 10) + 5 : 0;
+                    desc.moveBP = basePower;
+                    break;
+                }
             case "Infernal Parade":
             case "Barb Barrage":
             case "Bitter Malice":
@@ -914,12 +921,7 @@ function calculateBWXY(gen, attacker, defender, move, field) {
         (0, romhack_helpers_1.runHooks)(profile, "beforeFinalDamage", ctx);
         isCritical = ctx.state.isCritical;
         if (isCritical) {
-            if (settings.critGen >= 6) {
-                baseDamage = Math.floor((0, util_2.OF32)(baseDamage * (1.5)));
-            }
-            else {
-                baseDamage = Math.floor((0, util_2.OF32)(baseDamage * (gen.num > 5 ? 1.5 : 2)));
-            }
+            baseDamage = Math.floor((0, util_2.OF32)(baseDamage * (0, util_2.getCriticalHitMultiplier)(gen)));
             ctx.state.isCritical = isCritical;
             baseDamage = (0, romhack_helpers_1.applyValueHooks)(profile, "baseDamage", ctx, baseDamage);
             desc.isCritical = isCritical;
