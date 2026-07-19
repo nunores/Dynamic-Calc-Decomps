@@ -1376,18 +1376,20 @@ function buildBoxSpriteHTML(setId, highlights) {
     var speciesName = setId.split(" (")[0]
     var spriteSpeciesName = typeof getSpriteSpeciesName === "function" ? getSpriteSpeciesName(speciesName) : String(speciesName || "").replace(/-Totem$/i, "")
     var pok_name = spriteSpeciesName.toLowerCase().replace(" ","-").replace(".","").replace(".","").replace("’","").replace(":","-")
+    var spritePath = boxSpriteFallback.primaryPath(pok_name, sprite_style)
     var highlightClasses = highlights ? ` ${highlights.trim()}` : ""
     return `<div class="box-sort-card${highlightClasses}" data-set-id="${setId}">
         <div class="box-sort-metric"></div>
-        <img class="trainer-pok left-side ${sprite_style} ${highlights}" src="./img/${sprite_style}/${pok_name}.png" data-id="${setId}" ${getBoxSpriteFallbackAttributes(pok_name)}>
+        <img class="trainer-pok left-side ${sprite_style} ${highlights}" src="${spritePath}" data-id="${setId}" ${getBoxSpriteFallbackAttributes(pok_name)}>
     </div>`
 }
 
 function generateCompactPreviewHTML({ setData, speciesName, dataId, interactiveClass = "", containerSelector = ".player-party", showItem = true, showMoves = true, showNature = true, showAbility = true }) {
     var sprite_name = getPreviewSpriteName(speciesName)
+    var spritePath = boxSpriteFallback.primaryPath(sprite_name, sprite_style)
     var imageClass = interactiveClass ? ` ${interactiveClass}` : ""
     var pok = `<div class="trainer-pok-container">
-        <img class="trainer-pok${imageClass}" src="./img/${sprite_style}/${sprite_name}.png" data-id="${dataId}" ${getBoxSpriteFallbackAttributes(sprite_name)}>`
+        <img class="trainer-pok${imageClass}" src="${spritePath}" data-id="${dataId}" ${getBoxSpriteFallbackAttributes(sprite_name)}>`
 
     if (showItem && setData['item']) {
         var item_name = setData['item'].toLowerCase().replace(" ", "_").replace("'", "")

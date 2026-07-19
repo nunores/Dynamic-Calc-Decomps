@@ -7,6 +7,8 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
     "use strict"
 
+    var SPRITE_ASSET_REVISION = "20260719"
+
     var SPRITE_ALIASES = {
         "aegislash-both": "aegislash",
         "alcremie-mega": "alcremie",
@@ -48,6 +50,17 @@
         }
     }
 
+    function versionSpritePath(path) {
+        return `${path}?v=${SPRITE_ASSET_REVISION}`
+    }
+
+    function primaryPath(spriteName, spriteStyle, extension) {
+        var safeName = normalizeSpriteName(spriteName)
+        var style = normalizeStyle(spriteStyle)
+        var ext = normalizeExtension(extension || (style === "front" || style === "back" ? "gif" : "png"))
+        return versionSpritePath(`./img/${style}/${safeName}.${ext}`)
+    }
+
     function candidates(spriteName, spriteStyle, extension) {
         var safeName = normalizeSpriteName(spriteName)
         var style = normalizeStyle(spriteStyle)
@@ -55,25 +68,25 @@
         var alias = SPRITE_ALIASES[safeName]
         var paths = []
 
-        pushCandidate(paths, `./img/${style}/${safeName}.${ext}`)
+        pushCandidate(paths, primaryPath(safeName, style, ext))
         if (alias) {
-            pushCandidate(paths, `./img/${style}/${alias}.${ext}`)
+            pushCandidate(paths, primaryPath(alias, style, ext))
         }
 
         if (style !== "pokesprite") {
-            pushCandidate(paths, `./img/pokesprite/${safeName}.png`)
+            pushCandidate(paths, primaryPath(safeName, "pokesprite", "png"))
             if (alias) {
-                pushCandidate(paths, `./img/pokesprite/${alias}.png`)
+                pushCandidate(paths, primaryPath(alias, "pokesprite", "png"))
             }
         }
         if (style !== "newhd") {
-            pushCandidate(paths, `./img/newhd/${safeName}.png`)
+            pushCandidate(paths, primaryPath(safeName, "newhd", "png"))
             if (alias) {
-                pushCandidate(paths, `./img/newhd/${alias}.png`)
+                pushCandidate(paths, primaryPath(alias, "newhd", "png"))
             }
         }
 
-        pushCandidate(paths, "./img/default.png")
+        pushCandidate(paths, versionSpritePath("./img/default.png"))
         return paths
     }
 
@@ -116,6 +129,7 @@
         bind: bind,
         candidates: candidates,
         handleError: handleError,
+        primaryPath: primaryPath,
         normalizeSpriteName: normalizeSpriteName
     }
 })
