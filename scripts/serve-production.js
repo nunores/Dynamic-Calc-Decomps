@@ -8,8 +8,7 @@ const appRoot = path.resolve(__dirname, "..");
 const appName = path.basename(appRoot);
 const defaultHost = "127.0.0.1";
 const defaultPort = 8080;
-const heartbeatPath = "/__local_prod_heartbeat";
-const heartbeatIntervalMs = 2000;
+const browserClosedPath = "/__local_prod_browser_closed";
 const shutdownGraceMs = 7000;
 
 const mimeTypes = {
@@ -123,61 +122,60 @@ function sendResponse(response, statusCode, body, contentType) {
 }
 
 function createShutdownTracker(server, enabled) {
-  let heartbeatTimer = null;
-  let hasSeenBrowser = false;
+  let shutdownTimer = null;
 
-  function scheduleShutdown() {
-    if (!enabled || !hasSeenBrowser) {
-      return;
-    }
-
-    clearTimeout(heartbeatTimer);
-    heartbeatTimer = setTimeout(() => {
-      console.log("Browser tab heartbeat stopped. Shutting down local production server.");
-      server.close(() => {
-        process.exit(0);
-      });
-    }, shutdownGraceMs);
+  function cancelShutdown() {
+    clearTimeout(shutdownTimer);
+    shutdownTimer = null;
   }
 
   return {
-    markBrowserAlive() {
+    markBrowserActive() {
+      if (enabled) {
+        cancelShutdown();
+      }
+    },
+    markBrowserClosed() {
       if (!enabled) {
         return;
       }
 
-      hasSeenBrowser = true;
-      scheduleShutdown();
+      cancelShutdown();
+      shutdownTimer = setTimeout(() => {
+        console.log("Browser window closed. Shutting down local production server.");
+        server.close(() => {
+          process.exit(0);
+        });
+      }, shutdownGraceMs);
     },
     stop() {
-      clearTimeout(heartbeatTimer);
+      cancelShutdown();
     },
   };
 }
 
-function getHeartbeatScript() {
+function getBrowserLifecycleScript() {
   return `<script>
 ;(() => {
-  const heartbeatUrl = "${heartbeatPath}";
-  const ping = () => {
+  const browserClosedUrl = "${browserClosedPath}";
+  const notifyClosed = () => {
     try {
       if (navigator.sendBeacon) {
-        navigator.sendBeacon(heartbeatUrl);
+        navigator.sendBeacon(browserClosedUrl);
         return;
       }
-      fetch(heartbeatUrl, { cache: "no-store", keepalive: true, method: "POST" }).catch(() => {});
+      fetch(browserClosedUrl, { cache: "no-store", keepalive: true, method: "POST" }).catch(() => {});
     } catch (error) {}
   };
-  ping();
-  setInterval(ping, ${heartbeatIntervalMs});
+  window.addEventListener("pagehide", notifyClosed);
 })();
 </script>`;
 }
 
-function injectHeartbeatScript(html) {
-  const script = getHeartbeatScript();
+function injectBrowserLifecycleScript(html) {
+  const script = getBrowserLifecycleScript();
 
-  if (html.includes(heartbeatPath)) {
+  if (html.includes(browserClosedPath)) {
     return html;
   }
 
@@ -192,14 +190,16 @@ function createServer(root, shutdownTracker) {
   return http.createServer((request, response) => {
     const requestPath = new URL(request.url, "http://localhost").pathname;
 
-    if (requestPath === heartbeatPath) {
-      shutdownTracker.markBrowserAlive();
+    if (requestPath === browserClosedPath) {
+      shutdownTracker.markBrowserClosed();
       response.writeHead(204, {
         "Cache-Control": "no-store",
       });
       response.end();
       return;
     }
+
+    shutdownTracker.markBrowserActive();
 
     if (request.method !== "GET" && request.method !== "HEAD") {
       sendResponse(response, 405, "Method Not Allowed");
@@ -243,7 +243,7 @@ function createServer(root, shutdownTracker) {
               return;
             }
 
-            const body = injectHeartbeatScript(contents);
+            const body = injectBrowserLifecycleScript(contents);
             response.writeHead(200, {
               "Cache-Control": "no-store",
               "Content-Length": Buffer.byteLength(body),
